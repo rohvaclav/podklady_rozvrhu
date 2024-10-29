@@ -29,11 +29,15 @@ Součástí je i několik podadresářů které obsahují výsledky funkcí v mo
 Druhým podadresářem je \textbf{sources}, který nejprve obsahuje několik menších modulů:
 
 
-## config.py: obsahuje nastavení defaultních hodnot ve webovém rozhraní, zvolení některých proměnných použitých pro nastavení běhu programu a strukturu adresářů
+## config.py: 
+obsahuje nastavení defaultních hodnot ve webovém rozhraní, zvolení některých proměnných použitých pro nastavení běhu programu a strukturu adresářů
 
-## global_functions.py: Zahrnuje několik jednoduchých funkcí použitých napříč aplikací. Patří sem například převedení stringu "Prezenční" na "PS" prostřednictvím funkce "prepis\_formu"
+## global_functions.py: 
+Zahrnuje několik jednoduchých funkcí použitých napříč aplikací. Patří sem například převedení stringu "Prezenční" na "PS" prostřednictvím funkce "prepis\_formu"
 
-## setup.py: Velmi krátký modul který pomocí dat v config.py vytváří adresářovou strukturu.
+## setup.py: 
+Velmi krátký modul který pomocí dat v config.py vytváří adresářovou strukturu.
 
-## stahovani.py: Zajišťuje veškeré stahování dat z IS STAG. Zahrnuje jednotlivé funkce pro volání specifických webových služeb, které po vytvoření vstupních dat volají funkci "save\_csv". Ta pak využívá knihovnu requests pro komunikaci s IS STAG. 
+## stahovani.py: 
+Zajišťuje veškeré stahování dat z IS STAG. Zahrnuje jednotlivé funkce pro volání specifických webových služeb, které po vytvoření vstupních dat volají funkci "save\_csv". Ta pak využívá knihovnu requests pro komunikaci s IS STAG. 
 
