@@ -394,7 +394,7 @@ def getKatedraList(rok):
         df_temp_katedraList.sort()
         df = pd.DataFrame({'katedra':df_temp_katedraList})
         df1 = pd.read_excel(global_functions.getSlozenyVysledek(rok), dtype=str)
-        writer = pd.ExcelWriter(global_functions.getSlozenyVysledek(rok)) #TODO: udělat celý proces pomocí už vytvořeného "book". Používání pandas writeru je zbytečná komplikace
+        writer = pd.ExcelWriter(global_functions.getSlozenyVysledek(rok)) #TODO: udělat celý proces pomocí už vytvořeného "book". Používání pandas writeru je potenciálně zbytečná komplikace
         df1.to_excel(writer, sheet_name='Sheet1')
         df.to_excel(writer,sheet_name='katedry')
         writer.close()
@@ -403,13 +403,11 @@ def getKatedraList(rok):
     df = pd.read_excel(global_functions.getSlozenyVysledek(rok), sheet_name='katedry', dtype=str)
     return df['katedra'].tolist()
 
+# Zajišťuje, že se Streamlit zapne pouze jednou
 def run_streamlit():
-    # Check if the app is already running through Streamlit
     if "streamlit" not in sys.argv[0]:
-        # This ensures that streamlit run is only called if it's not already running
         script_path = os.path.abspath(__file__)
         subprocess.run([sys.executable, "-m", "streamlit", "run", script_path])
 
 if __name__ == "__main__":
-    #run_streamlit()
     main()
