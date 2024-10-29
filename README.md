@@ -13,7 +13,7 @@ Tato aplikace je vyvinutá pouze v jazyce Python a funguje jen na straně klient
 
 ![Struktura adresáře](struktura_kod.png)
 
-V adresáři aplikace je nejprve modul main.py, který inicializuje apliakci a zároveň obsahuje implementaci Streamlitu. Tato knihovna  zprostředkovává webové rozhraní, skrze které uživatel interaguje s aplikací. 
+V adresáři aplikace je nejprve modul main.py, který inicializuje aplikaci a zároveň obsahuje implementaci Streamlitu. Tato knihovna  zprostředkovává webové rozhraní, skrze které uživatel interaguje s aplikací. 
 
 Zároveň modul zahrnuje implementaci obnovování seznamu předmětů podle akademického roku. Využívá k tomu několik funkcí z ostatních modulů popsaných níže. Obecný postup tohoto procesu lze vidět na Obr. \ref{fig:Diagram_tvorby_seznamu_predmetu_na_rok}.
 
