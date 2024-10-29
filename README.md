@@ -11,6 +11,8 @@ POZOR: Pro fungování aplikace je nutný soubor se seznamem kroužků, který j
 # Obecná struktura
 Tato aplikace je vyvinutá pouze v jazyce Python a funguje jen na straně klienta. Veškerá funkcionalita pro komunikaci s API IS STAG existuje pouze pro získání souborů, které jsou dále zpracovány lokálně. Před vysvětlením kódu je nutné brát v potaz, že k jeho funkci jsou potřeba mimo kódu dva tabulkové soubory. První je seznam kroužků, který je vytvářen členem rozvrhové komise. Druhým je nevyplněný vzorový soubor pro individuální zvolení kapacit pro předměty. Oba dva tyto soubory jsou dodávány společně s aplikací.
 
+![Struktura adresáře](struktura_kod.png)
+
 V adresáři aplikace je nejprve modul main.py, který inicializuje apliakci a zároveň obsahuje implementaci Streamlitu. Tato knihovna  zprostředkovává webové rozhraní, skrze které uživatel interaguje s aplikací. 
 
 Zároveň modul zahrnuje implementaci obnovování seznamu předmětů podle akademického roku. Využívá k tomu několik funkcí z ostatních modulů popsaných níže. Obecný postup tohoto procesu lze vidět na Obr. \ref{fig:Diagram_tvorby_seznamu_predmetu_na_rok}.
