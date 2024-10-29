@@ -17,11 +17,16 @@ def najdi_aa_akce(df, katedra, semestr, rok):
     df["Poznámky"] = poznamky_list
     return df
 
+# Funkce přečte 
+
+# POZN. Hodnota "-121" která se občas v kódu objevuje, je zde kvůli tomu že se objevuje v dodaném souboru seznamu kroužků.
+# Tvůrce seznamu toto číslo využíva namísto nuly pro označení prázdného kroužku. 
 def rozdel_na_rozvrhove_akce(df, katedra, semestr, rok):
     df = najdi_aa_akce(df, katedra, semestr, rok)
     new_dataframe = []
     for index, row in df.iterrows():
-        if((row["pocetStudentu"] > 0) & (row["Poznámky"] != "Pouze AA")): #(row["pocetStudentu"] > 0) &
+        if((row["pocetStudentu"] > 0) & (row["Poznámky"] != "Pouze AA")):
+            
             #prednasky
             if(int(row["jednotekPrednasek"]) > 0):
                 if(row["jednotkaPrednasky"] == "HOD/TYD"):
@@ -66,6 +71,7 @@ def rozdel_na_rozvrhove_akce(df, katedra, semestr, rok):
                         new_dataframe.append([row["zkratka"],row["nazevDlouhy"], row["prednasejiciSPodily"], " ", " ", row["jednotekPrednasek"], row["jednotkaPrednasky"], " ", " ", " ", " ", row["statut"], row["doporucenyRocnik"], row["doporucenySemestr"], krouzkystr, studenti_count, row["forma"], row["Poznámky"]])
                 else:
                     new_dataframe.append([row["zkratka"],row["nazevDlouhy"], row["prednasejiciSPodily"], " ", " ", row["jednotekPrednasek"], row["jednotkaPrednasky"], " ", " ", " ", " ", row["statut"], row["doporucenyRocnik"], row["doporucenySemestr"], row["krouzky"], row["pocetStudentu"], row["forma"], row["Poznámky"]])
+            
             #cviceni
             if(int(row["jednotekCviceni"]) > 0):
                 if(row["jednotkaCviceni"] == "HOD/TYD"):
@@ -111,6 +117,7 @@ def rozdel_na_rozvrhove_akce(df, katedra, semestr, rok):
                 else:
                     
                     new_dataframe.append([row["zkratka"],row["nazevDlouhy"], " ", row["cviciciSPodily"], " ", " ", " ", row["jednotekCviceni"], row["jednotkaCviceni"], " ", " ", row["statut"], row["doporucenyRocnik"], row["doporucenySemestr"], row["krouzky"], row["pocetStudentu"], row["forma"], row["Poznámky"]])
+            
             #seminare
             if(int(row["jednotekSeminare"]) > 0):
                 if(row["jednotkaSeminare"] == "HOD/TYD"):
