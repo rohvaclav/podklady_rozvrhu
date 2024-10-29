@@ -1,13 +1,13 @@
-#Základní popis
+# Základní popis
 
 Aplikace slouží k vygenerováním podkladů pro tvorbu rozvrhu na Univerzitě Jana Evangelisty Purkyně v Ústí nad Labem. Pomocí jednoduchého webového rozhraní může uživatel získat výstupní soubor se seznamem rozvrhovývh akcí pro zvolenou katedru, semestr a rok. 
 
-#Jak začít
+# Jak začít
 
 Ke spuštění aplikace je pro koncové uživatele nutné vytvořit soubor podklady_rozvrhu.exe pomocí PyInstaller. 
 Alternativně lze vytvořit Docker doubor nebo manuálně připravit porostředí - v takovém případě se aplikace spouští příkazem `streamlit run main.py`
 
-#Obecná struktura
+# Obecná struktura
 Tato aplikace je vyvinutá pouze v jazyce Python a funguje jen na straně klienta. Veškerá funkcionalita pro komunikaci s API IS STAG existuje pouze pro získání souborů, které jsou dále zpracovány lokálně. Před vysvětlením kódu je nutné brát v potaz, že k jeho funkci jsou potřeba mimo kódu dva tabulkové soubory. První je seznam kroužků, který je vytvářen členem rozvrhové komise. Druhým je nevyplněný vzorový soubor pro individuální zvolení kapacit pro předměty. Oba dva tyto soubory jsou dodávány společně s aplikací.
 
 V adresáři aplikace je nejprve modul main.py, který inicializuje apliakci a zároveň obsahuje implementaci Streamlitu. Tato knihovna  zprostředkovává webové rozhraní, skrze které uživatel interaguje s aplikací. 
