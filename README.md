@@ -6,6 +6,7 @@ Aplikace slouží k vygenerováním podkladů pro tvorbu rozvrhu na Univerzitě 
 
 Ke spuštění aplikace je pro koncové uživatele nutné vytvořit soubor podklady_rozvrhu.exe pomocí PyInstaller. 
 Alternativně lze vytvořit Docker soubor nebo manuálně připravit prostředí - v takovém případě se aplikace spouští příkazem `streamlit run main.py`
+
 POZOR: Pro fungování aplikace je nutný soubor se seznamem kroužků, který je s ohledem na obsah soukromých dat dodáván pouze kvalifikovaným osobám členy rozvrhové komise UJEP.
 
 # Obecná struktura
