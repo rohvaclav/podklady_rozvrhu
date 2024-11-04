@@ -185,10 +185,7 @@ def main():
                         df1.columns[0] != 'zkratka' or
                         df1.columns[1] != 'prednaska' or
                         df1.columns[2] != 'cviceni' or
-                        df1.columns[3] != 'seminar' or
-                        (df1['prednaska'] <= 0).any() or
-                        (df1['cviceni'] <= 0).any() or
-                        (df1['seminar'] <= 0).any()
+                        df1.columns[3] != 'seminar' 
                     ):
                         st.warning('Soubor neprošel validací.')
                         st.session_state.uploader_key += 1
