@@ -1,6 +1,6 @@
 # Základní popis
 
-Aplikace slouží k vygenerováním podkladů pro tvorbu rozvrhu na Univerzitě Jana Evangelisty Purkyně v Ústí nad Labem (dále jen UJEP). Pomocí jednoduchého webového rozhraní může uživatel získat výstupní soubor se seznamem rozvrhovývh akcí pro zvolenou katedru, semestr a rok. 
+Aplikace slouží k vygenerováním podkladů pro tvorbu rozvrhu na Univerzitě Jana Evangelisty Purkyně v Ústí nad Labem (dále jen UJEP). Pomocí jednoduchého webového rozhraní může uživatel získat výstupní soubor se seznamem rozvrhových akcí pro zvolenou katedru, semestr a rok. 
 
 # Jak začít
 
