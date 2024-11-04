@@ -173,14 +173,14 @@ def hledani_spol_vyuky(katedra, semestr, rok):
         stahovani.stahni_rozvrh_katedry(katedra,semestr,rok)
     df = pd.read_csv(global_functions.getRozvrhKatedry(katedra, semestr, rok), usecols = ['predmet','budova','mistnost','typAkceZkr','denZkr','hodinaSkutOd','hodinaSkutDo','tydenOd','tydenDo', 'tydenZkr'], sep=config.separator, engine='python', keep_default_na=False)
     df = df[df.denZkr != ""] #odebráni nerozvrhovaných akcí
-    df_paralelni = df[df.duplicated(subset=['budova','mistnost','typAkceZkr','denZkr','hodinaSkutOd','hodinaSkutDo','tydenOd','tydenDo', 'tydenZkr'], keep=False)]
-    df_paralelni = df_paralelni.groupby(['budova','mistnost','typAkceZkr','denZkr','hodinaSkutOd','hodinaSkutDo','tydenOd','tydenDo', 'tydenZkr'])
+    df_paralelni = df[df.duplicated(subset=['budova','mistnost','denZkr','hodinaSkutOd','hodinaSkutDo','tydenOd','tydenDo', 'tydenZkr'], keep=False)]
+    df_paralelni = df_paralelni.groupby(['budova','mistnost','denZkr','hodinaSkutOd','hodinaSkutDo','tydenOd','tydenDo', 'tydenZkr'])
     spol_vyuka = []
     for k, g in df_paralelni:   
         temp_row = ""
         for row in g.itertuples():  
             if(temp_row==""):
-                temp_row = str(row.typAkceZkr) + ": " + str(row.predmet)
+                temp_row = str(row.predmet)
             else:
                 temp_row = temp_row + "," + str(row.predmet)   
 

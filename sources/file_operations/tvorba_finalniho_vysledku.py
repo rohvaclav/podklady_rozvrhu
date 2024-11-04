@@ -95,36 +95,14 @@ def rozdel_vysledny_soubor(df, katedra, semestr, rok):
     df['zkratka'] = df.zkratka.astype(str)
 
     for paralelni_set in spol_vyuka:
-        typ = paralelni_set[:2]
-        kody = paralelni_set[4:].split(",")
+        kody = paralelni_set.split(",")
         lever = 0 # určuje jestli se má v loopu pokračovat
         for kod in kody: #pokud v setu paralelni vyuky jsou mene nez 2 predmety ktere jsou i v hledanem roce, ignoruj set
             if (str(kod) in df['zkratka'].values):
                 lever +=1
-        if(lever>=2):
-            lever = 0
-            for kod in kody:
-                df_spolecna_vyuka = df.loc[df['zkratka'] == kod]
-                if not df_spolecna_vyuka.empty:
-                    match(typ):
-                        case "Př":
-                            if not(str(df_spolecna_vyuka['jednotekPrednasek'].unique()) == "[' ' 0]"):
-                                lever+=1
-                        case "Cv":
-                            if not(str(df_spolecna_vyuka['jednotekCviceni'].unique()) == "[' ' 0]"):
-                                lever+=1
-                        case "Se":
-                            if not(str(df_spolecna_vyuka['jednotekSeminare'].unique()) == "[' ' 0]"):
-                                lever+=1
-                        case _:
-                            print("Problem s kodem paralelni vyuky")
-                            exit()
-        else:
-            lever = 0
-
         
         if(lever>=2):
-            pridany_kod_lever = 0
+            lever = 0
             predchozi_forma = "" # Pro kontrolu, jestli jsou vsechny formy (prezencni, kombinovane, mix) stejne 
             for kod in kody:
                 df_spol_vyuka_slice = df[df['zkratka'].isin(kody)]
@@ -142,40 +120,39 @@ def rozdel_vysledny_soubor(df, katedra, semestr, rok):
                             #print("elif dosazen u predmetu: " + row['zkratka'] + " v indexu: " + str(index))
                             df.loc[df_spol_vyuka_slice.index, 'forma'] = 'Mix'
                             predchozi_forma='Mix'
-                        match(typ):
-                            case "Př":
-                                if(row['jednotekPrednasek'].isnumeric()):
-                                    if not(bool(re.search(r'\d', str(spolecne_predmety_column[index])))):
-                                        spolecne_predmety_column[index] = paralel_int
-                                    else:
-                                        spolecne_predmety_column[index] = str(spolecne_predmety_column[index]) + "," + str(paralel_int)
-                                    pridany_kod_lever=pridany_kod_lever + 1
-                                    #print("Predmet nalezen na indexu: " + str(index) + " , prirazen identifikator " + str(paralel_int))
-                                    break
-                            case "Cv":
-                                if(row['jednotekCviceni'].isnumeric()):
-                                    if not(bool(re.search(r'\d', str(spolecne_predmety_column[index])))):
-                                        spolecne_predmety_column[index] = paralel_int
-                                    else:
-                                        spolecne_predmety_column[index] = str(spolecne_predmety_column[index]) + "," + str(paralel_int)
-                                    pridany_kod_lever=pridany_kod_lever + 1
-                                    #print("Predmet nalezen na indexu: " + str(index) + " , prirazen identifikator " + str(paralel_int))
-                                    break
-                            case "Se":
-                                if(row['jednotekSeminare'].isnumeric()):
-                                    if not(bool(re.search(r'\d', str(spolecne_predmety_column[index])))):
-                                        spolecne_predmety_column[index] = paralel_int
-                                    else:
-                                        spolecne_predmety_column[index] = str(spolecne_predmety_column[index]) + "," + str(paralel_int)
-                                    pridany_kod_lever=pridany_kod_lever + 1
-                                    #print("Predmet nalezen na indexu: " + str(index) + " , prirazen identifikator " + str(paralel_int))
-                                    break
-                            case _:
+
+                            if(global_functions.bezpecna_int_konverze(row['jednotekPrednasek']) > 0):
+                                if not(bool(re.search(r'\d', str(spolecne_predmety_column[index])))):
+                                    spolecne_predmety_column[index] = paralel_int
+                                else:
+                                    spolecne_predmety_column[index] = str(spolecne_predmety_column[index]) + "," + str(paralel_int)
+                                pridany_kod_lever=pridany_kod_lever + 1
+                                #print("Predmet nalezen na indexu: " + str(index) + " , prirazen identifikator " + str(paralel_int))
+                                break
+
+                            elif(global_functions.bezpecna_int_konverze(row['jednotekCviceni']) > 0):
+                                if not(bool(re.search(r'\d', str(spolecne_predmety_column[index])))):
+                                    spolecne_predmety_column[index] = paralel_int
+                                else:
+                                    spolecne_predmety_column[index] = str(spolecne_predmety_column[index]) + "," + str(paralel_int)
+                                pridany_kod_lever=pridany_kod_lever + 1
+                                #print("Predmet nalezen na indexu: " + str(index) + " , prirazen identifikator " + str(paralel_int))
+                                break
+
+                            elif(global_functions.bezpecna_int_konverze(row['jednotekSeminare']) >= 0):
+                                if not(bool(re.search(r'\d', str(spolecne_predmety_column[index])))):
+                                    spolecne_predmety_column[index] = paralel_int
+                                else:
+                                    spolecne_predmety_column[index] = str(spolecne_predmety_column[index]) + "," + str(paralel_int)
+                                pridany_kod_lever=pridany_kod_lever + 1
+                                #print("Predmet nalezen na indexu: " + str(index) + " , prirazen identifikator " + str(paralel_int))
+                                break
+                            else:
                                 print("Problem s kodem paralelni vyuky")
                                 exit()
 
 
-            if(pridany_kod_lever>=2):
+            if(lever>=2):
                 #print("Pridany kod lever: " + str(pridany_kod_lever), "paralel int: " + str(paralel_int))
                 paralel_int += 1    
     df['spolecnaVyuka'] = spolecne_predmety_column
