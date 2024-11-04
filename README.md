@@ -57,7 +57,22 @@ Zajišťuje veškeré stahování dat z IS STAG. Zahrnuje jednotlivé funkce pro
 
 ## krouzky.py:
 
+`krouzky_a_forma_z_oboru_predmetu(df, katedra, semestr, rok)`: Pomocí informací z WS getOboryPredmetu sloučí předměty s jejich kroužky, sečte jejich počet studentů a přidá formu.
+
+`pridej_minor_krouzky(df_vstup, df_krouzky)`: Ke každému kroužku ve sdruženém studiu přidá jeho protější kroužek.
+
 ## rozvrhove_akce.py:
+
+`rozdel_na_rozvrhove_akce(df, katedra, semestr, rok)`: Rozdělí předměty na rozvrhové akce s přiřazenýmy kroužky podle počtu studentů a maximální kapacity typu výuky.
+
+`najdi_aa_akce(df, katedra, semestr, rok)`: Do zadaného dataframu přidá sloupec "Poznámky", ve kterém označí AA akce.
+
+`hledani_spol_vyuky(katedra, semestr, rok)`: Podle rozvrhu z minulého roku katedry získá seznam společné výuky.
 
 ## tvorba_finalniho_vysledku.py:
 
+`rozdel_vysledny_soubor(df, katedra, semestr, rok)`: Obsáhlá funkce které doporučí předměty společné výuky a vyučující pomocí dat z předešlého roku. Následně vypočítá zátěž vyučujících a podklasdová data + tuto zátěž zapisuje do výsledného podkladového souboru, čímý tento proces končí.
+
+`sloz_jmeno_ucitele(df)`: Přečte jméno vyučujícího, včetně titulů, z několika sloupců a složí jej do jednoho stringu.
+
+`pricti_zatez(line1, jednotka_hodin, vyucujici_jmeno, vyucujici_paralelVyukaKody, vyucujici_zatez_PS, vyucujici_zatez_KS,vyucujici_zatez_MIX, typ, forma)`: Přičte hodinovou zátěž vyučujícímu. Případně jej přidá do seznamu vyučujících, pokud v něm ještě není.
