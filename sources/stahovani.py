@@ -7,14 +7,14 @@ from requests.auth import HTTPBasicAuth
 import sources.config as config
 import sources.global_functions as global_functions
 from main import get_user_ticket
-from main import redirect_to_url
+from main import refresh_url
 
 
 def save_csv(url, params, file_name, destination, columnList=None):
     response = requests.get(url, params=params, auth=HTTPBasicAuth(get_user_ticket(),''))
     if(response.text=="Unauthorized - invalid authorization data"):
         print("ERROR: Vypršela platnost ticketu") 
-        redirect_to_url("http://localhost:8501/") # TODO
+        refresh_url() # TODO
     df = pd.read_csv(StringIO(response.text), sep=";", engine='python', na_filter = False, dtype=str) 
     df.to_csv(destination + f"{file_name}.csv", index=False, sep=';', columns=columnList)
 

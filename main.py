@@ -12,6 +12,7 @@ if 'page_config_set' not in st.session_state:
     st.session_state['page_config_set'] = True
 from streamlit_js_eval import streamlit_js_eval
 import pandas as pd
+from urllib.parse import urlparse, urlunparse
 
 import sources.config as config
 from sources.setup import setupDirectory
@@ -27,19 +28,6 @@ def main():
 
     #Vytvoření podsložek
     setupDirectory()
-
-
-    # st.markdown("""
-    #             <style>
-    #                 div[data-testid="column"] {
-    #                     width: fit-content !important;
-    #                     flex: unset;
-    #                 }
-    #                 div[data-testid="column"] * {
-    #                     width: fit-content !important;
-    #                 }
-    #             </style>
-    #             """, unsafe_allow_html=True)
 
     st.markdown("""
     <style>
@@ -81,7 +69,7 @@ def main():
         st.text("")
         st.text("")
         st.text("")
-        widget_id = (id for id in range(1, 100_00)) #TODO odstranit - nepotřebné
+        widget_id = (id for id in range(1, 100_00))
         colA, colB, colC, colD, colE = st.columns([1,1,1,1,1])
         with colA:
             rok = st.selectbox(
@@ -176,12 +164,10 @@ def main():
         st.markdown('</div>', unsafe_allow_html=True)
 
         with st.form("my_form"): #nezávislé vstupy jsou uvnitř formuláře kvůli zabránění zbytečného obnovování stránky při změnách
-            #col_header1, col_header2, col_header3 = st.columns([1,1,1]) #TODO rozumější dělení sloupců
-            #with col_header1:
             st.subheader('Další vstupy')
-            col3, col4, col5, col6, col7, col8 = st.columns([0.3,0.3,0.3,0.7,0.7,0.6])
+            col3, col4, col5, col6, col7, col8 = st.columns([0.3,0.3,0.3,0.7,0.7,0.7])
             with col3:
-                config.prednaska_kapacita = st.number_input(label="Kapacita přednášek", value=9999, min_value=1) #TODO efektivnější validace (lze manuálně zadat např. -1)
+                config.prednaska_kapacita = st.number_input(label="Kapacita přednášek", value=9999, min_value=1) 
             with col4:
                 config.cviceni_kapacita = st.number_input(label="Kapacita cvičení", value=30, min_value=1)
             with col5:
@@ -215,8 +201,25 @@ def main():
                 vlastni_pocty = st.file_uploader("Vlastní počty studentů dle kroužku", type="xlsx")
                 if vlastni_pocty is not None:
                     df2=pd.read_excel(vlastni_pocty, dtype=str)
-                    # TODO: Validace
-                    df2.to_excel(config.dest_krouzky, index=False)
+                    if(
+                        len(df2.columns)!=11 or
+                        df2.columns[0] != 'Kód kroužku' or
+                        df2.columns[1] != 'Popis' or
+                        df2.columns[2] != 'Ročník' or
+                        df2.columns[3] != 'Místo výuky' or
+                        df2.columns[4] != 'Fakulta' or
+                        df2.columns[5] != 'Program' or
+                        df2.columns[6] != 'Obor' or
+                        df2.columns[7] != 'Kombinace' or
+                        df2.columns[8] != 'Rok' or
+                        df2.columns[9] != 'Počet studentů kroužku' or
+                        df2.columns[10] != 'Forma' 
+                    ):
+                        st.warning('Soubor neprošel validací.')
+                        st.session_state.uploader_key += 1
+                        st.rerun()
+                    else:
+                        df2.to_excel(config.dest_krouzky, index=False)
             
             with col8:
                 #Hlavní část programu. Využívá soubor slozenyVysledek pro daný rok,
@@ -236,7 +239,6 @@ def main():
                     with st.spinner("3/5 Přidávání kroužků... "):
                         df = krouzky.krouzky_a_forma_z_oboru_predmetu(df,katedra, semestr, rok)
                     with st.spinner("4/5 Dělení na rozvrhové akce... "):
-                        #df = ra.najdi_aa_akce(df, katedra, semestr, rok)
                         df = ra.rozdel_na_rozvrhove_akce(df, katedra, semestr, rok)
                     with st.spinner("5/5 Hledání spol. výuky a finální úpravy... "):
                         tfv.rozdel_vysledny_soubor(df, katedra, semestr, rok)
@@ -258,43 +260,6 @@ def main():
                     file_name='vysledek.xlsx',
                     mime='application/vnd.ms-excel'
                 )
-
-        # with col2:
-        #     if st.button('Generace podklad. souboru', key=next(widget_id)):
-        #         with st.spinner("Probíhá příkaz..."):
-
-        #             files = glob.glob(config.folder_vysledky + '*')
-        #             for f in files:
-        #                 os.remove(f)
-
-        #             start = time.time()
-        #             vsechny_fakulty=["FF","FSC","FSE","FSI","FUD","FZS","FŽP","PF","PFC","PRF","REK","RZS","U3V","UHS","UPV","UZM","UZS","UZT","UZU","ÚTŘ","IVK"]
-        #             stahovani.stahni_krouzky(rok)
-        #             for fakulta in vsechny_fakulty: 
-        #                 print("FAKULTA: " + fakulta)  
-        #                 stahovani.stahni_studijni_programy(fakulta, rok) 
-        #                 programy=pd.read_csv(global_functions.getProgramySoubor(fakulta), sep=config.separator, engine='python', dtype=str)
-        #                 for iterator1, line1 in programy.iterrows():
-        #                     print(" --- Program " + str(iterator1+1) + "/" + str(len(programy)) + " --- ")
-        #                     if(line1['typ']=='Doktorský'):
-        #                         print("Přeskočeno (Doktorský program).")
-        #                         continue
-        #                     program_idno = global_functions.ziskej_program_data(fakulta, iterator1, "stprIdno")
-        #                     program_kod = global_functions.ziskej_program_data(fakulta, iterator1, "kod")
-        #                     stahovani.stahni_obory_programu(program_idno)
-        #                     obory=pd.read_csv(global_functions.getOborySoubor(program_idno), sep=config.separator, engine='python', dtype=str)
-        #                     for iterator2, line2 in obory.iterrows():
-        #                         obor_idno = global_functions.ziskej_obor_data(iterator2, program_idno , "oborIdno")
-        #                         obor_cislo = global_functions.ziskej_obor_data(iterator2, program_idno , "cisloOboru")
-        #                         stahovani.stahni_predmety_oboru(obor_idno, rok)
-        #                         zt.zkombinuj_do_vysledku(obor_idno, program_idno, fakulta, program_kod, obor_cislo, rok, semestr)
-        #             end = time.time()
-        #             print("Program bezel " + str(end - start) + " sekund.")
-        #             start = time.time()
-        #             zt.zkombinuj_vysledky(rok)
-        #             end = time.time()
-        #             print("Program bezel " + str(end - start) + " sekund.")
-
         
         # zobrazení výsledné tabulky na webu - děleno na záložky. 
         if(os.path.isfile(global_functions.getVysledekKatedry(katedra, semestr, rok))):
@@ -377,12 +342,9 @@ def get_user_ticket():
     else:
         return st.query_params['stagUserTicket']
 
-def redirect_to_url(url: str):
-    st.components.v1.html(f"""
-        <script>
-            window.location.href = "{url}";
-        </script>
-    """, height=0)
+def refresh_url():
+    st.query_params.clear()
+    st.rerun()
 
 
     #Funkce vrací seznam všech kateder, které mají v daném roce alespoň jeden předmět
