@@ -21,7 +21,6 @@ def zkombinuj_do_vysledku(obor_idno, program_idno, fakulta, program_kod, obor_ci
         df = df[df['oborIdno']==str(obor_idno)]
         temp_forma = df.iloc[0, df.columns.get_loc("forma")]
         df.to_excel(writer, sheet_name='obor', index=False)
-        # TODO smazat
         df = pd.read_excel(config.dest_krouzky, keep_default_na=False, dtype=str)
         df = df.drop(df[df["Forma"] != global_functions.prepis_formu(temp_forma)].index)
         df = df.drop(df[df.Program != str(program_kod)].index)
@@ -43,12 +42,9 @@ def vysledek_pro_katedru(katedra, semestr, rok):
     df = pd.read_excel(global_functions.getSlozenyVysledek(rok), usecols=['katedra','rok','zkratka','nazevDlouhy','prednasejiciSPodily','cviciciSPodily','seminariciSPodily','jednotekPrednasek','jednotkaPrednasky','jednotekCviceni','jednotkaCviceni','jednotekSeminare','jednotkaSeminare','statut','doporucenyRocnik', 'doporucenySemestr'], dtype=str)
     df = df[(df['katedra']==katedra)]
     del df['katedra']
-    #df['zkratka'] = df['zkratka'].astype(str) TODO smazat pokud nejsou problémy
-    # TODO - podívat se na to, jestli je kontrola roku potřebná
     df['rok'] = pd.to_numeric(df['rok'])
     df = df[(df['rok']==rok)]
     del df['rok']
     df = df[(df['doporucenySemestr']==semestr)]
     df = df.drop_duplicates()
-    #df.to_excel(global_functions.getVysledekKatedry(katedra, semestr, rok), index=False)
     return df

@@ -14,7 +14,7 @@ def save_csv(url, params, file_name, destination, columnList=None):
     response = requests.get(url, params=params, auth=HTTPBasicAuth(get_user_ticket(),''))
     if(response.text=="Unauthorized - invalid authorization data"):
         print("ERROR: Vypršela platnost ticketu") 
-        refresh_url() # TODO
+        refresh_url()
     df = pd.read_csv(StringIO(response.text), sep=";", engine='python', na_filter = False, dtype=str) 
     df.to_csv(destination + f"{file_name}.csv", index=False, sep=';', columns=columnList)
 

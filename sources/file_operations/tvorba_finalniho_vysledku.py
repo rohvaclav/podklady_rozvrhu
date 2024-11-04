@@ -80,6 +80,12 @@ def pricti_zatez(line1, jednotka_hodin, vyucujici_jmeno, vyucujici_paralelVyukaK
                     vyucujici_zatez_MIX.append(0)
         vyucujici_paralelVyukaKody.append("")
 
+
+# Obsáhlá funkce která zprostředkovává poslední úpravy a uložení výsledného podkladového souboru
+# nejdříve se volá funkce ra.hledani_spol_vyuky, a dle jejího vráceného seznamu se
+# hledají předměty společné výuky i v novém seznamu.
+# V druhé polovině se volí vyučující a následně se počítá jejich zátěž. 
+# Nakonec se výsledný podkladový soubor dělí na čtyři listy - PS, KS, MIX a ZÁTĚŽ.
 def rozdel_vysledny_soubor(df, katedra, semestr, rok):
     spolecne_predmety_column = [" "] * len(df)
     predmety_jsou_mix_column = ["0"] * len(df) #Pokud společná výuka zahrnuje předměty, které mají rozdílnou formu, jejich forma je pomocí tohoto pole v pozdějším kroku přepsána na Mix
@@ -95,7 +101,6 @@ def rozdel_vysledny_soubor(df, katedra, semestr, rok):
         for kod in kody: #pokud v setu paralelni vyuky jsou mene nez 2 predmety ktere jsou i v hledanem roce, ignoruj set
             if (str(kod) in df['zkratka'].values):
                 lever +=1
-        # TODO Kontrola nejen toho jestli jsou vsechny kody v seznamu, ale jestli odpovida jejich typ (pr, cv, se)
         if(lever>=2):
             lever = 0
             for kod in kody:
@@ -122,20 +127,19 @@ def rozdel_vysledny_soubor(df, katedra, semestr, rok):
             pridany_kod_lever = 0
             predchozi_forma = "" # Pro kontrolu, jestli jsou vsechny formy (prezencni, kombinovane, mix) stejne 
             for kod in kody:
-                #for index, row in df.iterrows(): 
-                df_spol_vyuka_slice = df[df['zkratka'].isin(kody)]#TODO delat lepe, iterace asi neni nutna 
+                df_spol_vyuka_slice = df[df['zkratka'].isin(kody)]
                 for index, row in df_spol_vyuka_slice.iterrows(): 
                     if(row['zkratka'] == str(kod)):
                         #Kontrola, jestli je nutné přesunout předměty spol. výuky do MIX
-                        print("Index: " + str(index))
-                        print("Par. kod: " + str(paralel_int))
-                        print("predchozi_forma: " + predchozi_forma)
-                        print("Forma na radku: " + row["forma"])
+                        #print("Index: " + str(index))
+                        #print("Par. kod: " + str(paralel_int))
+                        #print("predchozi_forma: " + predchozi_forma)
+                        #print("Forma na radku: " + row["forma"])
 
                         if(predchozi_forma==""):
                             predchozi_forma=row["forma"]
                         elif(row["forma"]!=predchozi_forma):
-                            print("elif dosazen u predmetu: " + row['zkratka'] + " v indexu: " + str(index))
+                            #print("elif dosazen u predmetu: " + row['zkratka'] + " v indexu: " + str(index))
                             df.loc[df_spol_vyuka_slice.index, 'forma'] = 'Mix'
                             predchozi_forma='Mix'
                         match(typ):
@@ -172,11 +176,11 @@ def rozdel_vysledny_soubor(df, katedra, semestr, rok):
 
 
             if(pridany_kod_lever>=2):
-                print("Pridany kod lever: " + str(pridany_kod_lever), "paralel int: " + str(paralel_int))
+                #print("Pridany kod lever: " + str(pridany_kod_lever), "paralel int: " + str(paralel_int))
                 paralel_int += 1    
     df['spolecnaVyuka'] = spolecne_predmety_column
     df['forma'] = df['forma'].combine_first(pd.Series(predmety_jsou_mix_column))
-    print(df['forma'])
+    #print(df['forma'])
 
 
     #print(spolecne_predmety_column)
@@ -342,14 +346,14 @@ def rozdel_vysledny_soubor(df, katedra, semestr, rok):
     for radek in spolecne_predmety_column_str:
         split_items = radek.split(',')
         spolecne_predmety_column.extend([int(i) if i.isdigit() else float(i) for i in split_items])
-    print(spolecne_predmety_column)
+    #print(spolecne_predmety_column)
     if(spolecne_predmety_column):
-        print("i (max): " + str(max(spolecne_predmety_column)))
+        #print("i (max): " + str(max(spolecne_predmety_column)))
         for i in range(max(spolecne_predmety_column)+1):
             df_paralelPredmety = df[df['spolecnaVyuka'].astype(str).apply(lambda x: str(i) in x.split(','))]
             if(df_paralelPredmety.empty):
                 continue
-            print("i (" + str(i) + ") je nalezeno v seznamu cisel spol. vyuky.")
+            #print("i (" + str(i) + ") je nalezeno v seznamu cisel spol. vyuky.")
             sloupec = 'zvolenyVyucujici'
 
             if not(df_paralelPredmety['jednotekPrednasek'].iloc[0] == " "):
@@ -377,6 +381,12 @@ def rozdel_vysledny_soubor(df, katedra, semestr, rok):
                 print("Potencialni problem s paralel vyukou - vyucujici nenalezen")
 
     new_dataframe = []
+
+    #Zaokrouhlení zátěží na dvě desetinná čísla
+    vyucujici_zatez_PS = [round(num, 2) for num in vyucujici_zatez_PS]
+    vyucujici_zatez_KS = [round(num, 2) for num in vyucujici_zatez_KS]
+    vyucujici_zatez_MIX = [round(num, 2) for num in vyucujici_zatez_MIX]
+
     for idx, x in enumerate(vyucujici_jmeno):
         if (x != "nan"):
             new_dataframe.append([x, vyucujici_zatez_PS[idx], vyucujici_zatez_KS[idx], vyucujici_zatez_MIX[idx], vyucujici_paralelVyukaKody[idx]])

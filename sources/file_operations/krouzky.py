@@ -52,7 +52,7 @@ def krouzky_a_forma_z_oboru_predmetu(df, katedra, semestr, rok):
 
     return df_merged
 
-#Přidávání minor koužků momentálně pomocí hledání anagramů - TODO změnit na pevně daný dict
+#Přidávání minor koužků momentálně pomocí hledání anagramů
 def pridej_minor_krouzky(df_vstup, df_krouzky):
     #Jelikož oba dataframy mají stejně pojmenované sloupce, přejmenují se na unikátní
     df_vstup = df_vstup.rename(columns={'Kód kroužku': 'Kód kroužku A', 'Počet studentů kroužku': 'Počet studentů kroužku A'})

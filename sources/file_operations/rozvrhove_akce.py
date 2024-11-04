@@ -18,8 +18,9 @@ def najdi_aa_akce(df, katedra, semestr, rok):
     df["Poznámky"] = poznamky_list
     return df
 
-# Funkce přečte 
-
+# Funkce přečte info o předmětu, nalezne počty studentů na jeho individuálních kroužcích
+# a podle toho rozdělí přemět na minimum rozvrhových akcí. Kroužky s počtem studentů přesahujícím kapacitu se dělí na části.
+# Dělí se na 3 bloky kódu podle typu akce.
 # POZN. Hodnota "-121" která se občas v kódu objevuje, je zde kvůli tomu že se objevuje v dodaném souboru seznamu kroužků.
 # Tvůrce seznamu toto číslo využíva namísto nuly pro označení prázdného kroužku. 
 def rozdel_na_rozvrhove_akce(df, katedra, semestr, rok):
@@ -94,7 +95,7 @@ def rozdel_na_rozvrhove_akce(df, katedra, semestr, rok):
                             continue
                         elif(found_krouzek["Počet studentů kroužku"].values[0] > cviceni_kapacita):
                             pocet_dilcich_krouzku = global_functions.rozdel_na_cela_cisla(found_krouzek["Počet studentů kroužku"].values[0], cviceni_kapacita)
-                            print(pocet_dilcich_krouzku)
+                            #print(pocet_dilcich_krouzku)
                             for index, krouzek_cast in enumerate(pocet_dilcich_krouzku):
 
                                 krouzek_studenti_nazvy.append(str(found_krouzek["Kód kroužku"].values[0]) + "(" + str(index) + ")")
