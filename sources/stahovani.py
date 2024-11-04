@@ -7,16 +7,15 @@ from requests.auth import HTTPBasicAuth
 import sources.config as config
 import sources.global_functions as global_functions
 from main import get_user_ticket
+from main import redirect_to_url
 
 
 def save_csv(url, params, file_name, destination, columnList=None):
-    # request na specifikovanou url s parametry
     response = requests.get(url, params=params, auth=HTTPBasicAuth(get_user_ticket(),''))
     if(response.text=="Unauthorized - invalid authorization data"):
-        print("ERROR: Nutno znovu přihlásit") #TODO
-        exit()
+        print("ERROR: Vypršela platnost ticketu") 
+        redirect_to_url("http://localhost:8501/") # TODO
     df = pd.read_csv(StringIO(response.text), sep=";", engine='python', na_filter = False, dtype=str) 
-    # print(df.head())
     df.to_csv(destination + f"{file_name}.csv", index=False, sep=';', columns=columnList)
 
 def stahni_studijni_programy(fakulta, rok):
@@ -37,7 +36,9 @@ def stahni_obory_programu(program):
     "outputFormatEncoding" : "utf-8",
     "stprIdno" : program,
     }
-    save_csv("https://ws.ujep.cz/ws/services/rest2/programy/getOboryStudijnihoProgramu", stag_vars , "oboryStudijnihoProgramu" + program, config.folder_obory, ['oborIdno','nazevCz','cisloOboru','cisloSpecializace','typ','forma','fakulta','platnyOd','neplatnyOd','stprIdno','garant','garantUcitIdno','nazevProgramu','kodProgramu'])
+    save_csv("https://ws.ujep.cz/ws/services/rest2/programy/getOboryStudijnihoProgramu", 
+    stag_vars , "oboryStudijnihoProgramu" + program, config.folder_obory, 
+    ['oborIdno','nazevCz','cisloOboru','cisloSpecializace','typ','forma','fakulta','platnyOd','neplatnyOd','stprIdno','garant','garantUcitIdno','nazevProgramu','kodProgramu'])
 
 
 def stahni_predmety_oboru(obor, rok):
@@ -61,7 +62,8 @@ def stahni_rozvrh_katedry(katedra, semestr, rok):
         "rok" : str(rok),
         "semestr" : semestr,
         }
-        save_csv("https://ws.ujep.cz/ws/services/rest2/rozvrhy/getRozvrhByKatedra", stag_vars , "rozvrhByKatedra_" + katedra + "_" + str(rok) + "_" + semestr, config.folder_rozvrhy)
+        save_csv("https://ws.ujep.cz/ws/services/rest2/rozvrhy/getRozvrhByKatedra", stag_vars,
+         "rozvrhByKatedra_" + katedra + "_" + str(rok) + "_" + semestr, config.folder_rozvrhy)
 
 def stahni_krouzky(rok):
     #Stahování - data o kroužcích stáhne ze STAGu. Nefunkční, jelikož nemá data o počtu studentů

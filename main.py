@@ -66,13 +66,12 @@ def main():
     }
     </style>
     """, unsafe_allow_html=True)
-    login_url = "https://stag-demo.zcu.cz/ws/login?originalURL=http://localhost:8501/"
+    #login_url = "https://stag-demo.zcu.cz/ws/login?originalURL=http://localhost:8501/"
 
     if "uploader_key" not in st.session_state:
         st.session_state.uploader_key = 0
 
     if not 'stagUserTicket' in st.query_params: #nepřihlášený uživatel
-        # TODO: Zmenit login_url na dynamicke 
         login_url = "https://ws.ujep.cz/ws/login?originalURL=http://localhost:8501/" 
         st.markdown('# Přihlašte se pomocí <a href="https://ws.ujep.cz/ws/login?originalURL=http://localhost:8501/" target="_self">STAGu</a>', unsafe_allow_html=True)
     else:
@@ -180,7 +179,7 @@ def main():
             #col_header1, col_header2, col_header3 = st.columns([1,1,1]) #TODO rozumější dělení sloupců
             #with col_header1:
             st.subheader('Další vstupy')
-            col3, col4, col5, col6, col7, col8 = st.columns([0.3,0.3,0.3,0.7,0.7,0.7])
+            col3, col4, col5, col6, col7, col8 = st.columns([0.3,0.3,0.3,0.7,0.7,0.6])
             with col3:
                 config.prednaska_kapacita = st.number_input(label="Kapacita přednášek", value=9999, min_value=1) #TODO efektivnější validace (lze manuálně zadat např. -1)
             with col4:
@@ -378,6 +377,13 @@ def get_user_ticket():
     else:
         return st.query_params['stagUserTicket']
 
+def redirect_to_url(url: str):
+    st.components.v1.html(f"""
+        <script>
+            window.location.href = "{url}";
+        </script>
+    """, height=0)
+
 
     #Funkce vrací seznam všech kateder, které mají v daném roce alespoň jeden předmět
     #(a tudíž je má cenu nastavit jako možnost pro generování podkladů).
@@ -385,7 +391,7 @@ def get_user_ticket():
     #aby se hledání nemuselo opakovat.
 def getKatedraList(rok):
     book = openpyxl.load_workbook(global_functions.getSlozenyVysledek(rok))
-    if not 'katedry' in book.sheetnames: #TODO katedry_ZS a katedry_LS
+    if not 'katedry' in book.sheetnames: 
         book.create_sheet('katedry')
         book.save(global_functions.getSlozenyVysledek(rok))
         book.close()
@@ -404,10 +410,10 @@ def getKatedraList(rok):
     return df['katedra'].tolist()
 
 # Zajišťuje, že se Streamlit zapne pouze jednou
-def run_streamlit():
-    if "streamlit" not in sys.argv[0]:
-        script_path = os.path.abspath(__file__)
-        subprocess.run([sys.executable, "-m", "streamlit", "run", script_path])
+# def run_streamlit():
+#     if "streamlit" not in sys.argv[0]:
+#         script_path = os.path.abspath(__file__)
+#         subprocess.run([sys.executable, "-m", "streamlit", "run", script_path])
 
 if __name__ == "__main__":
     main()

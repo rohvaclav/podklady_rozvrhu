@@ -12,8 +12,9 @@ import sources.stahovani as stahovani
 def najdi_aa_akce(df, katedra, semestr, rok):
     poznamky_list = [""] * len(df)
     for index, row in df.iterrows():
-        if(((row["jednotekPrednasek"] == 0) or not(global_functions.is_number(row["jednotekPrednasek"])) ) & ((row["jednotekCviceni"] == 0) or not(global_functions.is_number(row["jednotekCviceni"]))) & ((row["jednotekSeminare"] == 0) or not(global_functions.is_number(row["jednotekSeminare"])))):
+        if all(global_functions.bezpecna_int_konverze(row[col]) == 0 for col in ["jednotekPrednasek", "jednotekCviceni", "jednotekSeminare"]):
             poznamky_list[index] = "Pouze AA"
+
     df["Poznámky"] = poznamky_list
     return df
 
@@ -30,8 +31,7 @@ def rozdel_na_rozvrhove_akce(df, katedra, semestr, rok):
             #prednasky
             if(int(row["jednotekPrednasek"]) > 0):
                 if(row["jednotkaPrednasky"] == "HOD/TYD"):
-                    prednaska_kapacita = config.prednaska_kapacita
-                    
+                    prednaska_kapacita = config.prednaska_kapacita                    
                     if(os.path.isfile(config.dest_kapacity)):
                         df_kapacita = pd.read_excel(config.dest_kapacity, na_filter=False, dtype=str)
                         df_kapacita = df_kapacita[(df_kapacita['zkratka']==row['zkratka'])]
@@ -185,7 +185,7 @@ def hledani_spol_vyuky(katedra, semestr, rok):
 
         spol_vyuka.append(temp_row)
 
-    #Dočasné odstranění společné výuky dvou předmětů v několika akcích TODO řešit
+    #Odstranění společné výuky dvou předmětů v několika akcích
     spol_vyuka = list(dict.fromkeys(spol_vyuka))
 
     return spol_vyuka  

@@ -26,8 +26,8 @@ def krouzky_a_forma_z_oboru_predmetu(df, katedra, semestr, rok):
     df_predmet_info['formaProgramu'] = df_predmet_info.groupby('zkratka')['formaProgramu'].transform(
         lambda x: x if x.nunique() == 1 else 'Mix'
     )
-
     df_predmet_info['formaProgramu'] = df_predmet_info['formaProgramu'].apply(lambda x: global_functions.prepis_formu(x))
+    
     # Sdružení kroužků a předmětů + agregace na 1 řádek = 1 předmět
     df_final = pd.merge(df_predmet_info, df_krouzky, left_on=['kodProgramu', 'formaProgramu', 'doporucenyRocnik'], 
                         right_on=['Program', 'Forma', 'Ročník'], how='left')

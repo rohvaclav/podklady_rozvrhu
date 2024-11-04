@@ -41,7 +41,7 @@ def pricti_zatez(line1, jednotka_hodin, vyucujici_jmeno, vyucujici_paralelVyukaK
     
     vyucujici = str(line1['zvolenyVyucujici'])
     if(jednotka_hodin=='HOD/SEM'):
-        hodiny_k_pricteni = round(float(line1[sloupec2]) / 12, 2)
+        hodiny_k_pricteni = round(float(line1[sloupec2]) / 13, 2)
     else:
         hodiny_k_pricteni = float(line1[sloupec2])
     if(vyucujici==' '):
@@ -91,11 +91,11 @@ def rozdel_vysledny_soubor(df, katedra, semestr, rok):
     for paralelni_set in spol_vyuka:
         typ = paralelni_set[:2]
         kody = paralelni_set[4:].split(",")
-        lever = 0
+        lever = 0 # určuje jestli se má v loopu pokračovat
         for kod in kody: #pokud v setu paralelni vyuky jsou mene nez 2 predmety ktere jsou i v hledanem roce, ignoruj set
             if (str(kod) in df['zkratka'].values):
                 lever +=1
-        #docasna oprava - kontrola nejen toho jestli jsou vsechny kody v seznamu, ale jestli odpovida jejich typ (pr, cv, se) TODO
+        # TODO Kontrola nejen toho jestli jsou vsechny kody v seznamu, ale jestli odpovida jejich typ (pr, cv, se)
         if(lever>=2):
             lever = 0
             for kod in kody:
@@ -382,7 +382,7 @@ def rozdel_vysledny_soubor(df, katedra, semestr, rok):
             new_dataframe.append([x, vyucujici_zatez_PS[idx], vyucujici_zatez_KS[idx], vyucujici_zatez_MIX[idx], vyucujici_paralelVyukaKody[idx]])
     
     #zkontroluj jestli je někde předmět který má studenty ale nemá zvoleného vyučujícího
-    chybejici_vyucujici_check = df[(df['Poznámky'] != "Pouze AA") & 
+    chybejici_vyucujici_check = df[(~df['Poznámky'].str.contains("Pouze AA")) & 
                                 (df['pocetStudentu'] != "0") & 
                                 (df['zdrojVyucujiciho']=="C. Vyučující nedosazen")]
     if not(chybejici_vyucujici_check.empty):
@@ -405,7 +405,7 @@ def rozdel_vysledny_soubor(df, katedra, semestr, rok):
     del df['doporucenySemestr']
     del df['statut']
 
-    #Tvorba sloupce s počtem sloupců
+    #Tvorba sloupce s počtem kroužků
     df['krouzky'] = df['krouzky'].fillna("")
     df['krouzky'] = df['krouzky'].astype(str)
     df['pocetKrouzku'] = df['krouzky'].apply(lambda krouzky: krouzky.count('.'))
