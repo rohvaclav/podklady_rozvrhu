@@ -11,9 +11,14 @@ if 'page_config_set' not in st.session_state:
     st.set_page_config(page_title="Podklady Rozvrhů", layout="wide")
     st.session_state['page_config_set'] = True
 from streamlit_js_eval import streamlit_js_eval
+from streamlit_session_browser_storage import SessionStorage
+sessionBrowserS = SessionStorage()
+
 import pandas as pd
 from urllib.parse import urlparse, urlunparse
 
+#import sysconfig 
+#print(sysconfig.get_paths()["purelib"])
 import sources.config as config
 from sources.setup import setupDirectory
 import sources.global_functions as global_functions
@@ -82,10 +87,13 @@ def main():
             ("LS", "ZS"), 
             key=next(widget_id))
         with colC:
+            selected_katedra = sessionBrowserS.getItem("selected_katedra")
             katedra = st.selectbox(
                 "Katedra",
                 getKatedraList(rok),
+                index=getKatedraList(rok).index(selected_katedra) if selected_katedra in getKatedraList(rok) else 0,
                 key=next(widget_id))
+        sessionBrowserS.setItem("selected_katedra", katedra)
         st.markdown('<div class="right-align">', unsafe_allow_html=True)
         with colE:
             st.markdown("""
@@ -342,7 +350,6 @@ def get_user_ticket():
 def refresh_url():
     st.query_params.clear()
     st.rerun()
-
 
     #Funkce vrací seznam všech kateder, které mají v daném roce alespoň jeden předmět
     #(a tudíž je má cenu nastavit jako možnost pro generování podkladů).
