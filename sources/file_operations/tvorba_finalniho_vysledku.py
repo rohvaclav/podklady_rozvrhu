@@ -101,7 +101,7 @@ def rozdel_vysledny_soubor(df, katedra, semestr, rok):
         for kod in kody: #pokud v setu paralelni vyuky jsou mene nez 2 predmety ktere jsou i v hledanem roce, ignoruj set
             if (str(kod) in df['zkratka'].values):
                 lever +=1
-        if(lever>=2):
+        if(lever>=2): # Pokud jsou nalezeny >=2 předměty, hledá se jestli mají v hledaném typu vyučovací hodiny 
             lever = 0
             for kod in kody:
                 df_spolecna_vyuka = df.loc[df['zkratka'] == kod]
@@ -131,15 +131,10 @@ def rozdel_vysledny_soubor(df, katedra, semestr, rok):
                 for index, row in df_spol_vyuka_slice.iterrows(): 
                     if(row['zkratka'] == str(kod)):
                         #Kontrola, jestli je nutné přesunout předměty spol. výuky do MIX
-                        #print("Index: " + str(index))
-                        #print("Par. kod: " + str(paralel_int))
-                        #print("predchozi_forma: " + predchozi_forma)
-                        #print("Forma na radku: " + row["forma"])
 
                         if(predchozi_forma==""):
                             predchozi_forma=row["forma"]
                         elif(row["forma"]!=predchozi_forma):
-                            #print("elif dosazen u predmetu: " + row['zkratka'] + " v indexu: " + str(index))
                             df.loc[df_spol_vyuka_slice.index, 'forma'] = 'Mix'
                             predchozi_forma='Mix'
                         match(typ):
@@ -175,24 +170,19 @@ def rozdel_vysledny_soubor(df, katedra, semestr, rok):
                                 exit()
 
 
-            if(pridany_kod_lever>=2):
-                #print("Pridany kod lever: " + str(pridany_kod_lever), "paralel int: " + str(paralel_int))
+            if(pridany_kod_lever>=2): # pokud byla nalezena spol. výuka, k identifikačnímu číslu se přičte 1 a pokračuje se
+            
                 paralel_int += 1    
     df['spolecnaVyuka'] = spolecne_predmety_column
-    df['forma'] = df['forma'].combine_first(pd.Series(predmety_jsou_mix_column))
-    #print(df['forma'])
-
-
-    #print(spolecne_predmety_column)
-
+    df['forma'] = df['forma'].combine_first(pd.Series(predmety_jsou_mix_column)) # změna forem předmětů dle společné výuky
             
     #hledani vyucujicich pro RA dle min. roku
     vyucujici_akce = [' '] * len(df)
     vyucujici_min_rok = [' '] * len(df)
     vyucujici_zdroj = [' '] * len(df)
     df_minRok = pd.read_csv(global_functions.getRozvrhKatedry(katedra, semestr, int(rok) -1),sep=config.separator, engine='python', keep_default_na=False, dtype=str)
-    #df_minRok['predmet'] = df_minRok.predmet.astype(str)
-    # předměty u kterých platí že 1přednáška/cvičení/seminář = 1 RA
+
+    # předměty s typem ve kterém se jeho studenti vejdou do jedné rozvrhové akce
     df_slice = df.drop_duplicates(['zkratka','prednasejiciSPodily','cviciciSPodily','seminariciSPodily'])
     df_slice['pocetStudentu'] = df_slice.pocetStudentu.astype(int)
     df_slice = df_slice[(df_slice['pocetStudentu'] > 0)]
@@ -254,13 +244,15 @@ def rozdel_vysledny_soubor(df, katedra, semestr, rok):
                             print(df_slice_temp)
 
                             exit()
-
+                    # úpravy nalezených vyučujících podle počtu rozvrhových akcí v hledaném a minulém roce
                     while(len(vyucujici_list_temp) < len(df_slice_temp)):
                         vyucujici_list_temp.append(' ')
                     if(len(vyucujici_list_temp) > len(df_slice_temp)):
                         a = len(vyucujici_list_temp) - len(df_slice_temp)
                         del vyucujici_list_temp[-a]
 
+                    # konečně volba vyučujících.
+                    # preference je dána dosazením stejných z min. roku.
                     vyucujici_iterator = 0
                     for index, row in df_slice_temp.iterrows():
                         if((vyucujici_list_temp[vyucujici_iterator]==' ') & (global_functions.ziskej_prvni_vyucujici(df_slice_temp.iloc[0], typ)!="nan") & (global_functions.ziskej_prvni_vyucujici(df_slice_temp.iloc[0], typ)!=" ") & (global_functions.ziskej_prvni_vyucujici(df_slice_temp.iloc[0], typ)!="") & (global_functions.ziskej_prvni_vyucujici(df_slice_temp.iloc[0], typ)!=" ") ):
@@ -275,7 +267,7 @@ def rozdel_vysledny_soubor(df, katedra, semestr, rok):
                             pass
                         vyucujici_iterator += 1         
 
-
+    # kontrola správného označení zdroje vyučujících
     df['zvolenyVyucujici'] = vyucujici_akce
     df['predeslyVyucujici'] = vyucujici_min_rok
     for index, i in enumerate(vyucujici_akce):
@@ -289,7 +281,7 @@ def rozdel_vysledny_soubor(df, katedra, semestr, rok):
                 vyucujici_zdroj[index] = "C. Vyučující nedosazen"
     df['zdrojVyucujiciho'] = vyucujici_zdroj
 
-    #zatez vyucujicich - pouze neparalelne vyucovane predmety
+    #zatez vyucujicich - pouze nespolečně vyucovane predmety
     vyucujici_jmeno = []
     vyucujici_paralelVyukaKody = []
     vyucujici_zatez_PS = []
@@ -346,14 +338,11 @@ def rozdel_vysledny_soubor(df, katedra, semestr, rok):
     for radek in spolecne_predmety_column_str:
         split_items = radek.split(',')
         spolecne_predmety_column.extend([int(i) if i.isdigit() else float(i) for i in split_items])
-    #print(spolecne_predmety_column)
     if(spolecne_predmety_column):
-        #print("i (max): " + str(max(spolecne_predmety_column)))
         for i in range(max(spolecne_predmety_column)+1):
             df_paralelPredmety = df[df['spolecnaVyuka'].astype(str).apply(lambda x: str(i) in x.split(','))]
             if(df_paralelPredmety.empty):
                 continue
-            #print("i (" + str(i) + ") je nalezeno v seznamu cisel spol. vyuky.")
             sloupec = 'zvolenyVyucujici'
 
             if not(df_paralelPredmety['jednotekPrednasek'].iloc[0] == " "):
@@ -382,11 +371,16 @@ def rozdel_vysledny_soubor(df, katedra, semestr, rok):
 
     new_dataframe = []
 
+    
+    
+    # Následují úpravy výsledku #
+
     #Zaokrouhlení zátěží na dvě desetinná čísla
     vyucujici_zatez_PS = [round(num, 2) for num in vyucujici_zatez_PS]
     vyucujici_zatez_KS = [round(num, 2) for num in vyucujici_zatez_KS]
     vyucujici_zatez_MIX = [round(num, 2) for num in vyucujici_zatez_MIX]
 
+    # převedení polí zátěže do dataframu
     for idx, x in enumerate(vyucujici_jmeno):
         if (x != "nan"):
             new_dataframe.append([x, vyucujici_zatez_PS[idx], vyucujici_zatez_KS[idx], vyucujici_zatez_MIX[idx], vyucujici_paralelVyukaKody[idx]])
