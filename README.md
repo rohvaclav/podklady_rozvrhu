@@ -1,11 +1,12 @@
 # Základní popis
 
-Aplikace slouží k vygenerováním podkladů pro tvorbu rozvrhu na Univerzitě Jana Evangelisty Purkyně v Ústí nad Labem (dále jen UJEP). Pomocí jednoduchého webového rozhraní může uživatel získat výstupní soubor se seznamem rozvrhovývh akcí pro zvolenou katedru, semestr a rok. 
+Aplikace slouží k vygenerováním podkladů pro tvorbu rozvrhu na Univerzitě Jana Evangelisty Purkyně v Ústí nad Labem (dále jen UJEP). Pomocí jednoduchého webového rozhraní může uživatel získat výstupní soubor se seznamem rozvrhových akcí pro zvolenou katedru, semestr a rok. 
 
 # Jak začít
 
-Ke spuštění aplikace je pro koncové uživatele nutné vytvořit soubor podklady_rozvrhu.exe pomocí PyInstaller. 
-Alternativně lze vytvořit Docker soubor nebo manuálně připravit prostředí - v takovém případě se aplikace spouští příkazem `streamlit run main.py`
+Pro uživatele: Aplikace bude spustitelná pomocí EXE souboru. Toto řešení není momentálně připravené.
+
+Pro vývojáře: Lze vytvořit Docker soubor nebo manuálně připravit prostředí. Aplikace se pak spouští příkazem `streamlit run main.py`
 
 POZOR: Pro fungování aplikace je nutný soubor se seznamem kroužků, který je s ohledem na obsah soukromých dat dodáván pouze kvalifikovaným osobám členy rozvrhové komise UJEP.
 
@@ -33,7 +34,7 @@ Druhým podadresářem je sources, který nejprve obsahuje několik menších mo
 ## main.py
 
 Vstupní modul. Obsahuje streamlit rozhraní prostřednictvím kterého uživatel ovládá aplikaci. Uvnitř funkce `main` je zároveň volání několika funkcí pro obnovu seznamu předmětů a tvorbu výsledné podkladové tabulky, spojené s jejich tlačítky.
-Dále zahrnuje funkci `get_user_ticket()`, která vrací ticket uživatele. `refresh_url()`, která obnoví stránku. Nakonec funkci `getKatedraList(rok)`, která pomocí zadaného roku zobrazí uvnitř rozbalovacího menu v prohlížeči katedry, které mají v tomto roce předměty.
+Dále zahrnuje funkce `get_user_ticket()`, která vrací ticket uživatele a `refresh_url()`, která obnoví stránku. Nakonec funkci `getKatedraList(rok)`, která pomocí zadaného roku zobrazí uvnitř rozbalovacího menu v prohlížeči katedry, které mají v tomto roce předměty.
 
 ## config.py: 
 Obsahuje nastavení defaultních hodnot ve webovém rozhraní, zvolení některých proměnných použitých pro nastavení běhu programu a strukturu adresářů
